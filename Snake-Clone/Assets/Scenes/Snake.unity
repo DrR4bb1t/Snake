@@ -1815,14 +1815,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawn: {fileID: 1996408617}
-  collector: {fileID: 550207828}
   gameLogic: {fileID: 1996408618}
   playerID: 1
   moveSpeed: 2
   direction: 0
   foodCounter: 0
   flashmode: 0
-  m_BodyPartPrefab: {fileID: 0}
+  m_BodyPartPrefab: {fileID: 4548321149332429546, guid: 6ce57f3fdd010bd45af205a51d904e63,
+    type: 3}
 --- !u!114 &550207828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1837,6 +1837,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 550207827}
   playerCounter: {fileID: 534074337}
+  collection: []
+  sprite: {fileID: 0}
+  bodyPart: {fileID: 0}
+  bodyPartPosition: {x: 0, y: 0, z: 0}
+  bodyPartName: 
+  moveSpeed: 0
+  direction: 0
+  deltaY: 0
+  deltaX: 0
+  bodySize: 0
+  bodyPartSize: 0.64
+  storedPlayerPosition: {x: 0, y: 0, z: 0}
+  bodyPartSprite: 
 --- !u!61 &550207829
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2976,14 +2989,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawn: {fileID: 1996408617}
-  collector: {fileID: 1126778339}
   gameLogic: {fileID: 1996408618}
   playerID: 2
   moveSpeed: 2
   direction: 0
   foodCounter: 0
   flashmode: 0
-  m_BodyPartPrefab: {fileID: 0}
+  m_BodyPartPrefab: {fileID: 4548321149332429546, guid: 6ce57f3fdd010bd45af205a51d904e63,
+    type: 3}
 --- !u!114 &1126778339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2998,6 +3011,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1126778338}
   playerCounter: {fileID: 1008178831}
+  collection: []
+  sprite: {fileID: 0}
+  bodyPart: {fileID: 0}
+  bodyPartPosition: {x: 0, y: 0, z: 0}
+  bodyPartName: 
+  moveSpeed: 0
+  direction: 0
+  deltaY: 0
+  deltaX: 0
+  bodySize: 0
+  bodyPartSize: 0.64
+  storedPlayerPosition: {x: 0, y: 0, z: 0}
+  bodyPartSprite: 
 --- !u!61 &1126778340
 BoxCollider2D:
   m_ObjectHideFlags: 0

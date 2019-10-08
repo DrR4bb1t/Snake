@@ -11,9 +11,6 @@ public class PlayerLogic : NetworkBehaviour
     private SpawnLogic spawn;
 
     [SerializeField]
-    private Collector collector;
-
-    [SerializeField]
     private GameLogic gameLogic;
 
     private List<GameObject> completeSnake = new List<GameObject>();
@@ -22,7 +19,7 @@ public class PlayerLogic : NetworkBehaviour
 
     //Values for movement.
     public float moveSpeed = 2f;
-    public int direction = 0;
+    public int m_Direction = 0;
     private float deltaX;
     private float deltaY;
 
@@ -38,12 +35,16 @@ public class PlayerLogic : NetworkBehaviour
     [SerializeField]
     private GameObject m_BodyPartPrefab;
 
+    private bool m_BodyDestinationSet = false;
+    private Vector3[] m_BodyPartDestinations = new Vector3[100];
+
     private void Start()
     {
         if (m_BodyPartPrefab == null)
             Debug.LogError(nameof(m_BodyPartPrefab) + " is Missing on: " + nameof(this.GetType));
 
         completeSnake.Add(this.gameObject);
+        m_BodyPartDestinations[0] = Vector3.zero;
     }
 
     private void Update()
@@ -53,7 +54,10 @@ public class PlayerLogic : NetworkBehaviour
             Move();
             if (flashmode == true)
                 UpTimeOfFlashmode();
+
+            UpdateBodyParts();
         }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collider)
@@ -88,7 +92,8 @@ public class PlayerLogic : NetworkBehaviour
         GameObject bodyPart = GameObject.Instantiate(m_BodyPartPrefab);
         SetBodyPartSprite(bodyPart, playerID);
         completeSnake.Add(bodyPart);
-        UpdateBodyParts();
+        //TODO:
+        //AddBodyPartPositionOnSnakeTail();
     }
 
     private void UpdateBodyParts()
@@ -99,12 +104,32 @@ public class PlayerLogic : NetworkBehaviour
             return;
         }
 
+        if (!m_BodyDestinationSet)
+            SetDestination();
+
         //update
         for (int i = 1; i < completeSnake.Count; i++)
         {
-            Vector3 dir = (completeSnake[i - 1].transform.position - completeSnake[i].transform.position).normalized;
-            completeSnake[i].transform.position = new Vector3();
+            if ((m_BodyPartDestinations[i] - completeSnake[i].transform.position).magnitude >= 0.1 && (m_BodyPartDestinations[i] - completeSnake[i].transform.position).magnitude <= 0.2)
+                m_BodyDestinationSet = false;
+
+            Vector3 dir = (m_BodyPartDestinations[i] - completeSnake[i].transform.position).normalized;
+            completeSnake[i].transform.position += dir * moveSpeed * Time.deltaTime;
         }
+    }
+
+    private void SetDestination()
+    {
+        if (completeSnake.Count <= 1)
+        {
+            Debug.Log("No bodypart attached");
+            return;
+        }
+
+        for (int i = 1; i < completeSnake.Count; i++)
+            m_BodyPartDestinations[i] = completeSnake[i - 1].transform.position;
+
+        m_BodyDestinationSet = true;
     }
 
     private void SetBodyPartSprite(GameObject obj, int plaID)
@@ -121,22 +146,22 @@ public class PlayerLogic : NetworkBehaviour
 
     private void Move()
     {
-        if (direction == 1)
+        if (m_Direction == 1)
         {
             deltaY = moveSpeed * Time.deltaTime;
             transform.position = transform.position + new Vector3(0f, deltaY, 0f);
         }
-        else if (direction == 2)
+        else if (m_Direction == 2)
         {
             deltaY = -moveSpeed * Time.deltaTime;
             transform.position = transform.position + new Vector3(0f, deltaY, 0f);
         }
-        else if (direction == 3)
+        else if (m_Direction == 3)
         {
             deltaX = -moveSpeed * Time.deltaTime;
             transform.position = transform.position + new Vector3(deltaX, 0f, 0f);
         }
-        else if (direction == 4)
+        else if (m_Direction == 4)
         {
             deltaX = moveSpeed * Time.deltaTime;
             transform.position = transform.position + new Vector3(deltaX, 0f, 0f);
@@ -154,28 +179,28 @@ public class PlayerLogic : NetworkBehaviour
     /// </summary>
     public void SetDirectionUp()
     {
-        direction = 1;
+        m_Direction = 1;
         rotation = 90f;
         transform.rotation = Quaternion.Euler(0f, 0f, rotation);
     }
 
     public void SetDirectionDown()
     {
-        direction = 2;
+        m_Direction = 2;
         rotation = -90f;
         transform.rotation = Quaternion.Euler(0f, 0f, rotation);
     }
 
     public void SetDirectionLeft()
     {
-        direction = 3;
+        m_Direction = 3;
         rotation = -180f;
         transform.rotation = Quaternion.Euler(0f, 0f, rotation);
     }
 
     public void SetDirectionRight()
     {
-        direction = 4;
+        m_Direction = 4;
         rotation = 0f;
         transform.rotation = Quaternion.Euler(0f, 0f, rotation);
     }
