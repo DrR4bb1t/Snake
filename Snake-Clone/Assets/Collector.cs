@@ -27,7 +27,7 @@ public class Collector : MonoBehaviour
     private float deltaY;
     private float deltaX;
     private float bodySize;
-    private float bodyPartSise = 0.64f;
+    private float bodyPartSize = 0.64f;
 
     private Vector3 storedPlayerPosition;
     private string bodyPartSprite;
@@ -49,6 +49,8 @@ public class Collector : MonoBehaviour
 
     private void CreateBodyPart()
     {
+        
+
         bodyPartName = "bodyPart";
         //bodyPartName = "bodyPart" + player.foodCounter;
         bodyPart = new GameObject(bodyPartName);
@@ -90,7 +92,7 @@ public class Collector : MonoBehaviour
 
         //storedPlayerPosition = player.transform.position;
 
-        bodySize = bodyPartSise * player.foodCounter;
+        bodySize = bodyPartSize * player.foodCounter;
         moveSpeed = player.moveSpeed;
         direction = player.direction;
 

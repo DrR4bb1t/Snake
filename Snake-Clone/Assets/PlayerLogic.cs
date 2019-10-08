@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -14,6 +15,8 @@ public class PlayerLogic : NetworkBehaviour
 
     [SerializeField]
     private GameLogic gameLogic;
+
+    private List<GameObject> completeSnake = new List<GameObject>();
 
     public int playerID;
 
@@ -31,8 +34,16 @@ public class PlayerLogic : NetworkBehaviour
 
     public bool flashmode = false;
     private float upTimeCounter;
+
+    [SerializeField]
+    private GameObject m_BodyPartPrefab;
+
     private void Start()
     {
+        if (m_BodyPartPrefab == null)
+            Debug.LogError(nameof(m_BodyPartPrefab) + " is Missing on: " + nameof(this.GetType));
+
+        completeSnake.Add(this.gameObject);
     }
 
     private void Update()
@@ -41,11 +52,8 @@ public class PlayerLogic : NetworkBehaviour
         {
             Move();
             if (flashmode == true)
-            {
                 UpTimeOfFlashmode();
-            }
         }
-
     }
 
     private void OnCollisionEnter2D(Collision2D collider)
@@ -61,16 +69,54 @@ public class PlayerLogic : NetworkBehaviour
 
         if (collider.gameObject.name == "Food")
         {
-            Destroy(spawn.food);
             PlayerFoodCounter();
-            collector.AddBodyPartToBody();
+            Destroy(spawn.food);
             spawn.SpawnFood();
+
+            AddBodyPart(m_BodyPartPrefab);
+            //collector.AddBodyPartToBody();
         }
         if (collider.gameObject.name == "Flash")
         {
             EnterFlashmode();
             Destroy(spawn.flash);
         }
+    }
+
+    private void AddBodyPart(GameObject prefab)
+    {
+        GameObject bodyPart = GameObject.Instantiate(m_BodyPartPrefab);
+        SetBodyPartSprite(bodyPart, playerID);
+        completeSnake.Add(bodyPart);
+        UpdateBodyParts();
+    }
+
+    private void UpdateBodyParts()
+    {
+        if(completeSnake.Count <= 1)
+        {
+            Debug.Log("No bodypart attached");
+            return;
+        }
+
+        //update
+        for (int i = 1; i < completeSnake.Count; i++)
+        {
+            Vector3 dir = (completeSnake[i - 1].transform.position - completeSnake[i].transform.position).normalized;
+            completeSnake[i].transform.position = new Vector3();
+        }
+    }
+
+    private void SetBodyPartSprite(GameObject obj, int plaID)
+    {
+        string path;
+
+        if (plaID == 1)
+            path = "Sprites/snakeRobot_link_noWheel_purple";
+        else
+            path = "Sprites/snakeRobot_link_noWheel_red";
+
+        obj.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(path);
     }
 
     private void Move()
@@ -168,6 +214,7 @@ public class PlayerLogic : NetworkBehaviour
     {
         RpcSetPlayerFoodCounter(newFoodCounter);
     }
+
     [ClientRpc]
     private void RpcSetPlayerFoodCounter(int newFoodCounter)
     {

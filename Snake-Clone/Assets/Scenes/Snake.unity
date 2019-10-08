@@ -1822,6 +1822,7 @@ MonoBehaviour:
   direction: 0
   foodCounter: 0
   flashmode: 0
+  m_BodyPartPrefab: {fileID: 0}
 --- !u!114 &550207828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2982,6 +2983,7 @@ MonoBehaviour:
   direction: 0
   foodCounter: 0
   flashmode: 0
+  m_BodyPartPrefab: {fileID: 0}
 --- !u!114 &1126778339
 MonoBehaviour:
   m_ObjectHideFlags: 0
