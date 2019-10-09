@@ -106,12 +106,12 @@ namespace SA
             playerID++;
             if (playerID == 1)
             {
-                CmdPlacePlayer1();
+                //CmdPlacePlayer1();
                 //NetworkServer.Spawn(player1);
             }
             else if(playerID == 2)
             {
-                CmdPlacePlayer2();
+                //CmdPlacePlayer2();
                 //NetworkServer.Spawn(player2);
             }
             foodEaten = true;
@@ -373,45 +373,45 @@ namespace SA
             return Sprite.Create(texture2D, rect, Vector2.one * 0.5f, 1, 0, SpriteMeshType.FullRect);
         }
 
-        [Command]
-        private void CmdPlacePlayer1()
-        {
-            player1 = new GameObject("Player 1");
-            SpriteRenderer player1Renderer = player1.AddComponent<SpriteRenderer>();
-            //SpriteRenderer player1Renderer = prefab.AddComponent<SpriteRenderer>();
-            NetworkIdentity identity1 = player1.AddComponent<NetworkIdentity>();
-            NetworkHash128 newID = NetworkHash128.Parse("player1");
-            player1Sprite = CreateSprite(player1Color);
-            player1Renderer.sprite = player1Sprite;
-            player1Renderer.sortingOrder = 1;
-            player1Node = GetNode(0, 7);
-            PlacePlayerObject(player1, player1Node.worldPosition);
-            player1.transform.localScale = Vector3.one * 1.1f;
+        //[Command]
+        //private void CmdPlacePlayer1()
+        //{
+        //    player1 = new GameObject("Player 1");
+        //    SpriteRenderer player1Renderer = player1.AddComponent<SpriteRenderer>();
+        //    //SpriteRenderer player1Renderer = prefab.AddComponent<SpriteRenderer>();
+        //    NetworkIdentity identity1 = player1.AddComponent<NetworkIdentity>();
+        //    NetworkHash128 newID = NetworkHash128.Parse("player1");
+        //    player1Sprite = CreateSprite(player1Color);
+        //    player1Renderer.sprite = player1Sprite;
+        //    player1Renderer.sortingOrder = 1;
+        //    player1Node = GetNode(0, 7);
+        //    PlacePlayerObject(player1, player1Node.worldPosition);
+        //    player1.transform.localScale = Vector3.one * 1.1f;
 
-            tailParent1 = new GameObject("TailParent");
-            NetworkTransform networkTransform1_1 = tailParent1.AddComponent<NetworkTransform>();
-            NetworkServer.Spawn(player1, newID);
-        }
+        //    tailParent1 = new GameObject("TailParent");
+        //    NetworkTransform networkTransform1_1 = tailParent1.AddComponent<NetworkTransform>();
+        //    NetworkServer.Spawn(player1, newID);
+        //}
 
-        [Command]
-        private void CmdPlacePlayer2()
-        {
-            player2 = new GameObject("Player 2");
-            SpriteRenderer player2Renderer = player2.AddComponent<SpriteRenderer>();
-            NetworkTransform networkTransform2 = player2.AddComponent<NetworkTransform>();
-            NetworkIdentity identity2 = player2.AddComponent<NetworkIdentity>();
-            NetworkHash128 newID = NetworkHash128.Parse("player2");
-            player2Sprite = CreateSprite(player2Color);
-            player2Renderer.sprite = player2Sprite;
-            player2Renderer.sortingOrder = 1;
-            player2Node = GetNode(7, 0);
-            PlacePlayerObject(player2, player2Node.worldPosition);
-            player2.transform.localScale = Vector3.one * 1.1f;
+        //[Command]
+        //private void CmdPlacePlayer2()
+        //{
+        //    player2 = new GameObject("Player 2");
+        //    SpriteRenderer player2Renderer = player2.AddComponent<SpriteRenderer>();
+        //    NetworkTransform networkTransform2 = player2.AddComponent<NetworkTransform>();
+        //    NetworkIdentity identity2 = player2.AddComponent<NetworkIdentity>();
+        //    NetworkHash128 newID = NetworkHash128.Parse("player2");
+        //    player2Sprite = CreateSprite(player2Color);
+        //    player2Renderer.sprite = player2Sprite;
+        //    player2Renderer.sortingOrder = 1;
+        //    player2Node = GetNode(7, 0);
+        //    PlacePlayerObject(player2, player2Node.worldPosition);
+        //    player2.transform.localScale = Vector3.one * 1.1f;
 
-            tailParent2 = new GameObject("TailParent");
-            NetworkTransform networkTransform2_1 = tailParent2.AddComponent<NetworkTransform>();
-            NetworkServer.Spawn(player2, newID);
-        }
+        //    tailParent2 = new GameObject("TailParent");
+        //    NetworkTransform networkTransform2_1 = tailParent2.AddComponent<NetworkTransform>();
+        //    NetworkServer.Spawn(player2, newID);
+        //}
 
         private void CreateFood()
         {

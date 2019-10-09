@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 2694652789383102269}
   - component: {fileID: 7866683210123804838}
   - component: {fileID: 3764003904738276406}
+  - component: {fileID: -1324529336436760688}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: Player1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -119,7 +120,7 @@ MonoBehaviour:
     i14: 0
     i15: 0
   m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
+  m_LocalPlayerAuthority: 1
 --- !u!114 &3764003904738276406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,3 +143,16 @@ MonoBehaviour:
   m_SnapThreshold: 5
   m_InterpolateRotation: 1
   m_InterpolateMovement: 1
+--- !u!114 &-1324529336436760688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4795269303155015232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 650bb46fbdb90ef47b988fd7e5839117, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerID: 0
