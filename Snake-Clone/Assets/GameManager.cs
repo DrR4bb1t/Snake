@@ -265,12 +265,25 @@ namespace SA
                 //{
 
                 SetPlayerDirection();
-                if ( Input.GetKeyDown(KeyCode.U)/*playerCounter == 2 && foodSpawned == false*/)
+
+            if (rolled == true)
+
+            {
+
+                CmdRandomlyPlaceFoodAndPowerUp();
+                //rolled = false;
+
+            }
+
+            if (Input.GetKeyDown(KeyCode.U) && playerID == 1/*playerCounter == 2 && foodSpawned == false*/)
                 {
                     foodSpawned = true;
 
-                        RNG();
-                        CmdRandomlyPlaceFoodAndPowerUp();
+                    if (rolled != true)
+                    {
+                            RNG();
+
+                    }
 
                     //CmdFoodSpawn();
                 }
@@ -611,7 +624,7 @@ namespace SA
         {
             //if (rolled != true)
             //{
-            //    rolled = true;
+                rolled = true;
 
                 if (playerID == 1)
                 {
