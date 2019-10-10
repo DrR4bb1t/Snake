@@ -265,18 +265,12 @@ namespace SA
                 //{
 
                 SetPlayerDirection();
-                if (playerCounter == 2 && foodSpawned == false)
+                if ( Input.GetKeyDown(KeyCode.U)/*playerCounter == 2 && foodSpawned == false*/)
                 {
-                    if (rolled == true)
-                    {
-                        CmdRandomlyPlaceFoodAndPowerUp();
                     foodSpawned = true;
 
-                    }
-                    if (rolled != true)
-                    {
                         RNG();
-                    }
+                        CmdRandomlyPlaceFoodAndPowerUp();
 
                     //CmdFoodSpawn();
                 }
@@ -615,14 +609,16 @@ namespace SA
 
         private void RNG()
         {
-            if (rolled != true)
-            {
-                rolled = true;
+            //if (rolled != true)
+            //{
+            //    rolled = true;
 
-                if (playerID == 2)
+                if (playerID == 1)
+                {
                     rngX = Random.Range(0, 7);
-                rngY = Random.Range(0, 7);
-            }
+                    rngY = Random.Range(0, 7);
+                }
+            //}
         }
 
         [Command]
@@ -634,15 +630,16 @@ namespace SA
         private void RpcSendRandomlyPlaceFoodAndPowerUp()
         {
 
+            Node n1 = new Node();
                 GameObject f = Instantiate(food);
-                n.worldPosition = new Vector3(rngX, rngY);
-
+                n1.worldPosition = new Vector3(rngX, rngY);
+                PlacePlayerObject(f, n1.worldPosition);
+                foodEaten = false;
+                NetworkServer.Spawn(f);
             if (foodEaten == true)
             {            
 
-                PlacePlayerObject(f, n.worldPosition);
-                foodEaten = false;
-                NetworkServer.Spawn(f);
+
             }
 
             if (gameStarted == true)
