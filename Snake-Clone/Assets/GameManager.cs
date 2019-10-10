@@ -116,11 +116,21 @@ namespace SA
         private Node n;
         [SyncVar]
         private bool foodSpawned;
+        private bool countdownStarted = false;
+        private float countdownOfFood = 5f;
 
         private void Start()
         {
             onStart.Invoke();
             //StartNewGame();
+        }
+
+        private void OnCollisionEnter2D(Collision2D collider)
+        {
+            if (collider.gameObject.CompareTag("Food"))
+            {
+                Debug.Log("t");
+            }
         }
 
         public void StartNewGame()
@@ -276,17 +286,31 @@ namespace SA
             }
 
             if (Input.GetKeyDown(KeyCode.U) && playerID == 1/*playerCounter == 2 && foodSpawned == false*/)
-                {
-                    foodSpawned = true;
+            {
+                foodSpawned = true;
+                countdownStarted = true;
+            }
 
+            if (countdownStarted == true)
+            {
+
+                countdownOfFood -= Time.deltaTime;
+            }
+
+            if (countdownOfFood <= 0)
+            {
                     if (rolled != true)
                     {
                             RNG();
 
                     }
+                countdownOfFood = 5f;
+            }
+
+
 
                     //CmdFoodSpawn();
-                }
+                
 
                 //CmdGetFoodPosition(foodPosition);
                 //UpdateScore();
