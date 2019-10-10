@@ -281,7 +281,7 @@ namespace SA
             {
 
                 CmdRandomlyPlaceFoodAndPowerUp();
-                //rolled = false;
+                rolled = false;
 
             }
 
@@ -305,6 +305,7 @@ namespace SA
 
                     }
                 countdownOfFood = 5f;
+                countdownStarted = false;
             }
 
 
@@ -667,10 +668,11 @@ namespace SA
         private void RpcSendRandomlyPlaceFoodAndPowerUp()
         {
 
-            Node n1 = new Node();
+                Node n1 = new Node();
                 GameObject f = Instantiate(food);
                 n1.worldPosition = new Vector3(rngX, rngY);
-                PlacePlayerObject(f, n1.worldPosition);
+                foodNode.worldPosition = n1.worldPosition;
+                PlacePlayerObject(f, foodNode.worldPosition);
                 foodEaten = false;
                 NetworkServer.Spawn(f);
             if (foodEaten == true)
