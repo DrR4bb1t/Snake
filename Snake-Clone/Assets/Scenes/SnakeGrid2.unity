@@ -1402,7 +1402,8 @@ MonoBehaviour:
   highScore1Text: {fileID: 343302315}
   currentScore2Text: {fileID: 1672389314}
   highScore2Text: {fileID: 2106177421}
-  prefab: {fileID: 4878418191084507334, guid: 33ebc93a620303d4a935f7c6be2a0e5e, type: 3}
+  prefab: {fileID: 4795269303155015232, guid: e006b669fbc2df84b941ce36ff108404, type: 3}
+  food: {fileID: 6424616889752860397, guid: 60ffee425ccc07b4eb7f8bc78a945b57, type: 3}
 --- !u!4 &1787914560
 Transform:
   m_ObjectHideFlags: 0

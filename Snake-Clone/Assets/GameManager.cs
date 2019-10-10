@@ -21,7 +21,7 @@ namespace SA
 
         private GameObject player1;
         private GameObject player2;
-        private GameObject food;
+        //private GameObject food;
         private GameObject powerUp;
 
         private GameObject tailParent1;
@@ -32,6 +32,7 @@ namespace SA
         private Node foodNode;
         private Node powerUpNode;
         private Node targetNode;
+        private Node pNode;
         private Sprite player1Sprite;
         private Sprite player2Sprite;
         private Player p;
@@ -54,6 +55,7 @@ namespace SA
         private bool isFirstInput = false;
         private bool FlashModeIsActive = false;
         private float upTimeCounter = 3f;
+        [SyncVar]
         private bool foodEaten = false;
         private bool isCoolingDown = false;
         private bool gameStarted = false;
@@ -86,10 +88,34 @@ namespace SA
         public Text highScore2Text;
         private bool powerUpSpawned;
         [SyncVar]
+        private int playerCounter;
         private int playerID;
+        [SyncVar]
+        private int playerConnected;
 
         [SerializeField]
         private GameObject prefab;
+        [SyncVar]
+        private bool initializedPlayer1 = false;
+        [SyncVar]
+        private bool initializedPlayer2 = false;
+        private bool synced1 = false;
+        private bool synced2 = false;
+        private bool isLocalPlayeer = false;
+
+        [SerializeField]
+        private GameObject food;
+
+        private Vector3 foodPosition;
+        [SyncVar]
+        private int rngX;
+        [SyncVar]
+        private int rngY;
+        [SyncVar]
+        private bool rolled;
+        private Node n;
+        [SyncVar]
+        private bool foodSpawned;
 
         private void Start()
         {
@@ -99,24 +125,15 @@ namespace SA
 
         public void StartNewGame()
         {
-            ClearReferences();
+            //ClearReferences();
             CreateMap();
             PlaceCamera();
             //CmdPlayerID();
-            playerID++;
-            if (playerID == 1)
-            {
-                //CmdPlacePlayer1();
-                //NetworkServer.Spawn(player1);
-            }
-            else if(playerID == 2)
-            {
-                //CmdPlacePlayer2();
-                //NetworkServer.Spawn(player2);
-            }
+            playerCounter++;
+
             foodEaten = true;
-            CreateFood();
-            //targetDirection = Direction.right;
+            foodSpawned = false;
+            //CreateFood();
             isGamerOver = false;
             powerUpSpawned = false;
             //gameStarted = false;
@@ -166,22 +183,106 @@ namespace SA
             //    return;
             //}
 
+            if (playerCounter == 1 && initializedPlayer1 != true)
+            {
+                player1 = GameObject.Find("player1");
+                //player1.transform.localScale = Vector3.one * 1.5f;
+                Player p1 = player1.GetComponent<Player>();
+                player1Node = p1.playerNode;
+                player1Node = GetNode(0, 7);
+                PlacePlayerObject(player1, player1Node.worldPosition);
 
-            gameStarted = true;
-            GetInput();
+                initializedPlayer1 = true;
+                playerID = playerCounter;
+                targetDirection = Direction.right;
+                isLocalPlayeer = true;
+                CmdPlayerID();
+                //CmdPlacePlayer1();
+                //NetworkServer.Spawn(player1);
+            }
+            if (playerCounter == 2 && initializedPlayer2 != true)
+            {
+                player2 = GameObject.Find("player2");
+                //player2.transform.localScale = Vector3.one * 1.5f;
+                Player p2 = player2.GetComponent<Player>();
+                player2Node = p2.playerNode;
+                player2Node = GetNode(7, 0);
+                PlacePlayerObject(player2, player2Node.worldPosition);
 
-            if (powerUpSpawned == false)
-                Countdown();
+                initializedPlayer2 = true;
+                playerID = playerCounter;
+                targetDirection = Direction.left;
+                isLocalPlayeer = true;
+                CmdPlayerID();
+                //CmdPlacePlayer2();
+                //NetworkServer.Spawn(player2);
+            }
 
-
-            if (FlashModeIsActive == true)
-                UpTimeOfFlashmode();
-
-            //if (isFirstInput)
+            //if (synced1 != true)
             //{
+            //    if (initializedPlayer1 == true)
+            //    {
+            //        player1 = GameObject.Find("player1");
+            //        player1.transform.localScale = Vector3.one * 1.5f;
+            //        Player p1 = player1.GetComponent<Player>();
+            //        player1Node = p1.playerNode;
+            //        player1Node = GetNode(0, 7);
+            //        PlacePlayerObject(player1, player1Node.worldPosition);
+
+            //        synced1 = true;
+            //    }
+            //}
+
+
+            //if (synced2 != true)
+            //{
+            //    if (initializedPlayer2 == true)
+            //    {
+            //        player2 = GameObject.Find("player2");
+            //        player2.transform.localScale = Vector3.one * 1.5f;
+            //        Player p2 = player2.GetComponent<Player>();
+            //        player2Node = p2.playerNode;
+            //        player2Node = GetNode(7, 0);
+            //        PlacePlayerObject(player2, player2Node.worldPosition);
+
+            //        synced2 = true;
+            //    }
+            //}
+
+            //if (initializedPlayer1 != false && initializedPlayer2 != false)
+            //{
+                gameStarted = true;
+                GetInput();
+
+                //if (powerUpSpawned == false)
+                //    Countdown();
+
+
+                //if (FlashModeIsActive == true)
+                //    UpTimeOfFlashmode();
+
+                //if (isFirstInput)
+                //{
 
                 SetPlayerDirection();
-                UpdateScore();
+                if (playerCounter == 2 && foodSpawned == false)
+                {
+                    if (rolled == true)
+                    {
+                        CmdRandomlyPlaceFoodAndPowerUp();
+                    foodSpawned = true;
+
+                    }
+                    if (rolled != true)
+                    {
+                        RNG();
+                    }
+
+                    //CmdFoodSpawn();
+                }
+
+                //CmdGetFoodPosition(foodPosition);
+                //UpdateScore();
 
                 timer += Time.deltaTime;
                 if (timer > moveRate)
@@ -191,14 +292,15 @@ namespace SA
                     MovePlayer();
 
                 }
-            //}
-            //else
-            //{
-            //    if (up || down || left || right)
-            //    {
-            //        isFirstInput = true;
-            //        //firstInput.Invoke();
-            //    }
+                //}
+                //else
+                //{
+                //    if (up || down || left || right)
+                //    {
+                //        isFirstInput = true;
+                //        //firstInput.Invoke();
+                //    }
+                //}
             //}
         }
 
@@ -212,14 +314,17 @@ namespace SA
 
         private void SetPlayerDirection()
         {
-            if (up)
-                SetDirection(Direction.up);
-            else if (down)
-                SetDirection(Direction.down);
-            else if (left)
-                SetDirection(Direction.left);
-            else if (right)
-                SetDirection(Direction.right);
+            if (isLocalPlayeer)
+            {
+                if (up)
+                    SetDirection(Direction.up);
+                else if (down)
+                    SetDirection(Direction.down);
+                else if (left)
+                    SetDirection(Direction.left);
+                else if (right)
+                    SetDirection(Direction.right);
+            }
         }
 
         private void MovePlayer()
@@ -247,15 +352,24 @@ namespace SA
                     break;
             }
 
-            Node targetNode;
 
-           targetNode = GetNode(player1Node.x + x, player1Node.y + y);
-            //if (targetNode == null)
-            //{
-            //    onGameOver.Invoke();
-            //}
-            //else
-            //{
+
+            //if (playerID == 1)
+            //    pNode = player1Node;
+            //if (playerID == 2)
+            //    pNode = player2Node;
+
+            if (playerID == 1)
+            {
+                Node targetNode;
+
+                targetNode = GetNode(player1Node.x + x, player1Node.y + y);
+                //if (targetNode == null)
+                //{
+                //    onGameOver.Invoke();
+                //}
+                //else
+                //{
                 if (IsTailNode(targetNode))
                 {
                     onGameOver.Invoke();
@@ -281,13 +395,13 @@ namespace SA
                     availableNodes.Add(previousNode);
 
 
-                    if (isScore)
-                    {
-                        tail.Add(CreateTailNode(previousNode.x, previousNode.y));
-                        availableNodes.Remove(previousNode);
-                    }
+                    //if (isScore)
+                    //{
+                    //    tail.Add(CreateTailNode(previousNode.x, previousNode.y));
+                    //    availableNodes.Remove(previousNode);
+                    //}
 
-                    MoveTail();
+                    //MoveTail();
 
                     //if (FlashModeIsActive == false)
                     //    RandomlyPlaceAndPowerUp();
@@ -303,13 +417,81 @@ namespace SA
 
                         onScore.Invoke();
 
-                        if (availableNodes.Count > 0)
-                            RandomlyPlaceAndPowerUp();
+                        //if (availableNodes.Count > 0)
+                            //RandomlyPlaceAndPowerUp();
                     }
-                //}
+                    //}
+                }
 
             }
+                if (playerID == 2)
+                {
+                    Node targetNode2;
+
+                    targetNode2 = GetNode(player2Node.x + x, player2Node.y + y);
+                    //if (targetNode == null)
+                    //{
+                    //    onGameOver.Invoke();
+                    //}
+                    //else
+                    //{
+                    if (IsTailNode(targetNode2))
+                    {
+                        onGameOver.Invoke();
+                    }
+                    else
+                    {
+
+
+                        bool isScore = false;
+
+                        if (targetNode2 == foodNode)
+                        {
+                            isScore = true;
+                            foodEaten = true;
+                        }
+
+                        if (targetNode2 == powerUpNode)
+                        {
+                            EnterFlashmode();
+                        }
+
+                        Node previousNode2 = player2Node;
+                        availableNodes.Add(previousNode2);
+
+
+                        //if (isScore)
+                        //{
+                        //    tail.Add(CreateTailNode(previousNode.x, previousNode.y));
+                        //    availableNodes.Remove(previousNode);
+                        //}
+
+                        //MoveTail();
+
+                        //if (FlashModeIsActive == false)
+                        //    RandomlyPlaceAndPowerUp();
+
+                        PlacePlayerObject(player2, targetNode2.worldPosition);
+                        player2Node = targetNode2;
+                        availableNodes.Remove(player2Node);
+                        if (isScore)
+                        {
+                            currentScore1++;
+                            if (currentScore1 >= highScore1)
+                                highScore1 = currentScore1;
+
+                            onScore.Invoke();
+
+                            //if (availableNodes.Count > 0)
+                                //RandomlyPlaceAndPowerUp();
+                        }
+                        //}
+
+                    }
+                }
+
         }
+
 
         private void CreateMap()
         {
@@ -413,35 +595,54 @@ namespace SA
         //    NetworkServer.Spawn(player2, newID);
         //}
 
-        private void CreateFood()
+        //private void CreateFood()
+        //{
+        //    food = new GameObject("Food");
+        //    SpriteRenderer foodRenderer = food.AddComponent<SpriteRenderer>();
+        //    foodRenderer.sprite = CreateSprite(foodColor);
+        //    foodRenderer.sortingOrder = 1;
+        //    RandomlyPlaceAndPowerUp();
+        //}
+
+        //private void CreatePowerUp()
+        //{
+        //    powerUp = new GameObject("Flash");
+        //    SpriteRenderer powerUpRenderer = powerUp.AddComponent<SpriteRenderer>();
+        //    powerUpRenderer.sprite = CreateSprite(powerUpColor);
+        //    powerUpRenderer.sortingOrder = 1;
+        //    RandomlyPlaceAndPowerUp();
+        //}
+
+        private void RNG()
         {
-            food = new GameObject("Food");
-            SpriteRenderer foodRenderer = food.AddComponent<SpriteRenderer>();
-            foodRenderer.sprite = CreateSprite(foodColor);
-            foodRenderer.sortingOrder = 1;
-            RandomlyPlaceAndPowerUp();
+            if (rolled != true)
+            {
+                rolled = true;
+
+                if (playerID == 2)
+                    rngX = Random.Range(0, 7);
+                rngY = Random.Range(0, 7);
+            }
         }
 
-        private void CreatePowerUp()
+        [Command]
+        private void CmdRandomlyPlaceFoodAndPowerUp()
         {
-            powerUp = new GameObject("Flash");
-            SpriteRenderer powerUpRenderer = powerUp.AddComponent<SpriteRenderer>();
-            powerUpRenderer.sprite = CreateSprite(powerUpColor);
-            powerUpRenderer.sortingOrder = 1;
-            RandomlyPlaceAndPowerUp();
+            RpcSendRandomlyPlaceFoodAndPowerUp();
         }
-
-        private void RandomlyPlaceAndPowerUp()
+        [ClientRpc]
+        private void RpcSendRandomlyPlaceFoodAndPowerUp()
         {
-            int rng = Random.Range(0, availableNodes.Count);
-            Node n = availableNodes[rng];
 
+                GameObject f = Instantiate(food);
+                n.worldPosition = new Vector3(rngX, rngY);
 
             if (foodEaten == true)
-            {
-                PlacePlayerObject(food, n.worldPosition);
-                foodNode = n;
+            {            
+
+                PlacePlayerObject(f, n.worldPosition);
                 foodEaten = false;
+                NetworkServer.Spawn(f);
             }
 
             if (gameStarted == true)
@@ -453,8 +654,6 @@ namespace SA
 
                     if (foodNode == powerUpNode)
                     {
-                        rng = Random.Range(0, availableNodes.Count);
-                        n = availableNodes[rng];
                         PlacePlayerObject(powerUp, n.worldPosition);
                         powerUpNode = n;
                     }
@@ -497,6 +696,7 @@ namespace SA
         private void PlacePlayerObject(GameObject gameObject, Vector3 position)
         {
             position += Vector3.one * 0.5f;
+            position.z = -0.2f;
             gameObject.transform.position = position;
         }
 
@@ -590,8 +790,8 @@ namespace SA
             }
             else
             {
-                CreatePowerUp();
-                RandomlyPlaceAndPowerUp();
+                //CreatePowerUp();
+                //RandomlyPlaceAndPowerUp();
                 powerUpSpawned = true;
             }
         }
@@ -623,14 +823,29 @@ namespace SA
         [Command]
         private void CmdPlayerID()
         {
-            playerID++;
-            RpcSetPlayerID(playerID);
+            RpcSetPlayerID();
         }
 
         [ClientRpc]
-        private void RpcSetPlayerID(int ID)
+        private void RpcSetPlayerID()
         {
-            playerID = ID;
+            playerConnected++;
+        }
+
+        [Command]
+        private void CmdFoodSpawn()
+        {
+            GameObject f = Instantiate(food);
+            //RandomlyPlaceAndPowerUp();
+            NetworkServer.Spawn(f);
+            foodEaten = false;
+        }
+
+        [Command]
+        private void CmdGetFoodPosition(Vector3 position)
+        {
+            food = GameObject.Find("Food");
+            position = food.transform.position;
         }
     }
 }
