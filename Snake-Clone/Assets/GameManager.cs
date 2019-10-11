@@ -64,10 +64,8 @@ namespace SA
         private float timer;
         private float cooldown = 5f;
 
-        [SyncVar]
         private int currentScore1;
         private int highScore1;
-        [SyncVar]
         private int currentScore2;
         private int highScore2;
 
@@ -118,6 +116,10 @@ namespace SA
         private bool foodSpawned;
         private bool countdownStarted = false;
         private float countdownOfFood = 5f;
+        [SyncVar]
+        private int score1;
+        [SyncVar]
+        private int score2;
 
         private void Start()
         {
@@ -125,9 +127,17 @@ namespace SA
             //StartNewGame();
         }
 
+        //private void OnCollisionEnter2D(Collision2D collider)
+        //{
+        //    if (collider.gameObject.CompareTag("Food"))
+        //    {
+        //        Debug.Log("t");
+        //    }
+        //}
+
         private void OnCollisionEnter2D(Collision2D collider)
         {
-            if (collider.gameObject.CompareTag("Food"))
+            if (collider.gameObject.name == "Food")
             {
                 Debug.Log("t");
             }
@@ -149,7 +159,6 @@ namespace SA
             //gameStarted = false;
             currentScore1 = 0;
             cooldown = 5f;
-            UpdateScore();
         }
 
         public void GameOver()
@@ -285,7 +294,10 @@ namespace SA
 
             }
 
-            if (Input.GetKeyDown(KeyCode.U) && playerID == 1/*playerCounter == 2 && foodSpawned == false*/)
+            //food = GameObject.Find("Food");
+            //Debug.Log(food.transform.position);
+                
+                if (Input.GetKeyDown(KeyCode.U) && playerID == 1/*playerCounter == 2 && foodSpawned == false*/)
             {
                 foodSpawned = true;
                 countdownStarted = true;
@@ -308,13 +320,20 @@ namespace SA
                 countdownStarted = false;
             }
 
+                CmdUpdateAllPlayerScores(currentScore1, currentScore2);
 
 
-                    //CmdFoodSpawn();
-                
+            //CmdFoodSpawn();
 
-                //CmdGetFoodPosition(foodPosition);
-                //UpdateScore();
+            if (Input.GetKeyDown(KeyCode.R) && playerID == 1)
+            {
+                currentScore1++;
+            }
+            if (Input.GetKeyDown(KeyCode.R) && playerID == 2)
+            {
+                currentScore2++;
+            }
+            //CmdGetFoodPosition(foodPosition);
 
                 timer += Time.deltaTime;
                 if (timer > moveRate)
@@ -671,8 +690,8 @@ namespace SA
                 Node n1 = new Node();
                 GameObject f = Instantiate(food);
                 n1.worldPosition = new Vector3(rngX, rngY);
-                foodNode.worldPosition = n1.worldPosition;
-                PlacePlayerObject(f, foodNode.worldPosition);
+                PlacePlayerObject(f, n1.worldPosition);
+
                 foodEaten = false;
                 NetworkServer.Spawn(f);
             if (foodEaten == true)
@@ -808,13 +827,27 @@ namespace SA
                     targetDirection = d;
         }
 
-        public void UpdateScore()
+        [Command]
+        private void CmdUpdateAllPlayerScores(int player1Scores, int player2Scores)
         {
-            currentScore1Text.text = currentScore1.ToString();
-            highScore1Text.text = highScore1.ToString();
+            RpcUpdateAllPlayerScores(player1Scores, player2Scores);
+        }
 
-            currentScore2Text.text = currentScore2.ToString();
-            highScore2Text.text = highScore2.ToString();
+        [ClientRpc]
+        public void RpcUpdateAllPlayerScores(int player1Score, int player2Score)
+        {
+            PrintScore(player1Score, player2Score);
+        }
+
+        private void PrintScore(int player1Score, int player2Score)
+        {
+            score1 = player1Score;
+            score2 = player2Score;
+            currentScore1Text.text = score1.ToString();
+            //highScore1Text.text = highScore1.ToString();
+
+            currentScore2Text.text = score2.ToString();
+            //highScore2Text.text = highScore2.ToString();
         }
 
         private void Countdown()
