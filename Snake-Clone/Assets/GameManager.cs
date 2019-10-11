@@ -320,7 +320,7 @@ namespace SA
                 countdownStarted = false;
             }
 
-                CmdUpdateAllPlayerScores(currentScore1, currentScore2);
+
 
 
             //CmdFoodSpawn();
@@ -328,13 +328,18 @@ namespace SA
             if (Input.GetKeyDown(KeyCode.R) && playerID == 1)
             {
                 currentScore1++;
+                CmdUpdateAllPlayerScores(currentScore1);
+
             }
             if (Input.GetKeyDown(KeyCode.R) && playerID == 2)
             {
-                currentScore2++;
-            }
-            //CmdGetFoodPosition(foodPosition);
+                CmdUpdateAllPlayerScores2(currentScore2);
 
+                //currentScore2++;
+            }
+
+
+            //CmdGetFoodPosition(foodPosition);
                 timer += Time.deltaTime;
                 if (timer > moveRate)
                 {
@@ -828,26 +833,60 @@ namespace SA
         }
 
         [Command]
-        private void CmdUpdateAllPlayerScores(int player1Scores, int player2Scores)
+        private void CmdUpdateAllPlayerScores(int player1Scores)
         {
-            RpcUpdateAllPlayerScores(player1Scores, player2Scores);
+            RpcUpdateAllPlayerScores(player1Scores);
         }
 
         [ClientRpc]
-        public void RpcUpdateAllPlayerScores(int player1Score, int player2Score)
+        public void RpcUpdateAllPlayerScores(int player1Score)
         {
-            PrintScore(player1Score, player2Score);
+            PrintScore1(player1Score);
         }
 
-        private void PrintScore(int player1Score, int player2Score)
+        private void PrintScore1(int score)
         {
-            score1 = player1Score;
-            score2 = player2Score;
+            score1 = score;
             currentScore1Text.text = score1.ToString();
+            //highScore1Text.text = highScore1.ToString();
+
+            //currentScore2Text.text = score2.ToString();
+            //highScore2Text.text = highScore2.ToString();
+        }
+
+        [Command]
+        private void CmdUpdateAllPlayerScores2(int player1Scores)
+        {
+            RpcUpdateAllPlayerScores2(player1Scores);
+        }
+
+        [ClientRpc]
+        public void RpcUpdateAllPlayerScores2(int player1Score)
+        {
+            currentScore2++;
+            PrintScore2(currentScore2);
+        }
+
+        private void PrintScore2(int score)
+        {
+            score2 = score;
+            //currentScore1Text.text = score1.ToString();
             //highScore1Text.text = highScore1.ToString();
 
             currentScore2Text.text = score2.ToString();
             //highScore2Text.text = highScore2.ToString();
+        }
+
+        [Command]
+        private void CmdPlayer2ScoreCnt()
+        {
+            RpcPlayer2ScoreCnt();
+        }
+
+        [ClientRpc]
+        private void RpcPlayer2ScoreCnt()
+        {
+            score2++;
         }
 
         private void Countdown()
